@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import tmdb_client
-import random
+import random  # Dodaj to
 
 app = Flask(__name__)
 
@@ -14,9 +14,21 @@ def utility_processor():
 # Endpoint dla strony głównej
 @app.route('/')
 def homepage():
+    list_types = [
+        {'key': 'popular', 'label': 'Filmy popularne'},
+        {'key': 'now_playing', 'label': 'Filmy nowo wydane'},
+        {'key': 'top_rated', 'label': 'Najwyżej oceniane filmy'},
+        {'key': 'upcoming', 'label': 'Filmy nadchodzące'}
+    ]
     selected_list = request.args.get('list_type', 'popular')
+    
+    # Sprawdzenie czy wybrany typ listy jest poprawny, jeśli nie, ustawiamy 'popular'
+    valid_list_types = [list_type['key'] for list_type in list_types]
+    if selected_list not in valid_list_types:
+        selected_list = 'popular'
+    
     movies = tmdb_client.get_movies_list(selected_list)
-    return render_template('homepage.html', movies=movies, current_list=selected_list)
+    return render_template('homepage.html', movies=movies, current_list=selected_list, list_types=list_types)
 
 # Endpoint dla szczegółów filmu
 @app.route("/movie/<movie_id>")

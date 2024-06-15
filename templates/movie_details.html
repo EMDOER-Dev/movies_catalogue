@@ -1,0 +1,47 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container">
+
+   <h1 class="my-4" style="color: black;">
+       {{ movie.title }}
+   </h1>
+
+   <div class="row">
+     <div class="col-md-8">
+       <img class="img-fluid" src="{{ tmdb_image_url(selected_backdrop.file_path, 'w780') }}" alt="{{ movie.title }}">
+     </div>
+     <div class="col-md-4">
+         <h3>{{ movie.tagline }}</h3>
+       <p style="color: black;">
+           {{ movie.overview }}
+       </p>
+       <dl>
+           <dt>Budżet</dt>
+           <dd>{{ movie.budget }}</dd>
+           <dt>Gatunki</dt>
+           <dd>{% for genre in movie.genres %}{{ genre.name }} {% if not loop.last %}, {% endif %}{% endfor %}</dd>
+       </dl>
+     </div>
+   </div>
+
+   <h3 class="my-4">Obsada</h3>
+   <div class="row">
+       {% for actor in cast %}
+           <div class="col-md-3 col-sm-6 mb-4">
+               <a href="#">
+                   <figure class="figure">
+                       {% if actor.profile_path %}
+                           <img src="{{ tmdb_image_url(actor.profile_path, 'w185') }}" class="figure-img img-fluid rounded" alt="{{ actor.name }}">
+                       {% else %}
+                           <img src="https://via.placeholder.com/185x278?text=Brak+zdjęcia" class="figure-img img-fluid rounded" alt="{{ actor.name }}">
+                       {% endif %}
+                       <figcaption class="figure-caption">{{ actor.name }} jako {{ actor.character }}</figcaption>
+                   </figure>
+               </a>
+           </div>
+       {% endfor %}
+   </div>
+
+</div>
+{% endblock %}

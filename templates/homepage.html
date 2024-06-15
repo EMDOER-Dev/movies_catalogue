@@ -1,22 +1,48 @@
+<!-- homepage.html -->
+
 {% extends "index.html" %}
 
 {% block content %}
-<div class="row">
-   {% for movie in movies %}
-   <div class="col-lg-3 col-md-6 mb-4">
-       <div class="card h-100 bg-dark text-white">
-           <!-- Placeholder dla obrazka (link) -->
-           <img class="card-img-top" src="http://placehold.it/300x500" alt="">
-           <div class="card-body">
-               <h4 class="card-title">{{ movie.title }}</h4>
-               <p class="card-text">Rok: {{ movie.year }}</p>
-               <p class="card-text">Gatunek: {{ movie.genre }}</p>
-           </div>
-           <div class="card-footer text-center">
-               <a href="#" class="btn btn-danger">Pokaż więcej</a>
-           </div>
-       </div>
-   </div>
-   {% endfor %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <h3 class="list-group-item active" style="background-color: #000; border-color: #f00;">Wybierz listę</h3>
+                {% for list_type in list_types %}
+                <a href="{{ url_for('homepage', list_type=list_type['key']) }}" class="list-group-item {% if current_list == list_type['key'] %}active text-white bg-danger{% endif %}" style="background-color: #222; color: #fff; border-color: #f00;">{{ list_type['label'] }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                {% for movie in movies[:3] %}
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="background-color: #222; border: 1px solid #f00; color: #fff;">
+                        <img class="card-img-top" src="{{ tmdb_image_url(movie.poster_path, 'w342') }}" alt="{{ movie.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #f00;">{{ movie.title }}</h5>
+                            <p class="card-text" style="color: #fff;">{{ movie.overview[:200] + '...' if movie.overview and movie.overview|length > 200 else movie.overview }}</p>
+                            <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary" style="background-color: #f00; border-color: #f00;">Szczegóły</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row mt-4">
+                {% for movie in movies[3:6] %}
+                <div class="col-md-4 mb-3">
+                    <div class="card" style="background-color: #222; border: 1px solid #f00; color: #fff;">
+                        <img class="card-img-top" src="{{ tmdb_image_url(movie.poster_path, 'w342') }}" alt="{{ movie.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #f00;">{{ movie.title }}</h5>
+                            <p class="card-text" style="color: #fff;">{{ movie.overview[:200] + '...' if movie.overview and movie.overview|length > 200 else movie.overview }}</p>
+                            <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary" style="background-color: #f00; border-color: #f00;">Szczegóły</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
