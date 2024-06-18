@@ -1,10 +1,6 @@
-# tmdb_client.py
-
 import requests
 
 API_KEY = '0f214f28296c208dc3cf6d2dce154551'
-
-# Funkcje do pobierania danych z API TMDB
 
 def get_movies_list(list_type):
     endpoint = f"https://api.themoviedb.org/3/movie/{list_type}"
@@ -23,7 +19,7 @@ def get_movies_list(list_type):
 
         return movies
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error fetching data for {list_type} movies: {e}")
         return None
 
 def get_single_movie(movie_id):
@@ -36,7 +32,7 @@ def get_single_movie(movie_id):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching movie details: {e}")
+        print(f"Error fetching movie details for movie ID {movie_id}: {e}")
         return None
 
 def get_single_movie_cast(movie_id):
@@ -47,9 +43,15 @@ def get_single_movie_cast(movie_id):
     try:
         response = requests.get(endpoint, params=params)
         response.raise_for_status()
-        return response.json()['cast']
+        data = response.json()  # Parsowanie odpowiedzi JSON
+
+        if isinstance(data, dict) and 'cast' in data:
+            return data['cast']
+        else:
+            print(f"No cast information found for movie ID {movie_id}")
+            return []
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching cast data: {e}")
+        print(f"Error fetching cast data for movie ID {movie_id}: {e}")
         return None
 
 def get_movie_images(movie_id):
@@ -62,7 +64,7 @@ def get_movie_images(movie_id):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching images data: {e}")
+        print(f"Error fetching images data for movie ID {movie_id}: {e}")
         return None
 
 def get_poster_url(poster_api_path, size="w342"):
