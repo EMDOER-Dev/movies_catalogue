@@ -1,5 +1,7 @@
 import unittest
+import pytest
 from unittest.mock import patch, Mock
+from main import app
 from tmdb_client import get_single_movie, get_movie_images, get_single_movie_cast
 
 class TestTmdbClient(unittest.TestCase):
@@ -74,6 +76,25 @@ class TestTmdbClient(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0]['name'], 'Actor 1')
         self.assertEqual(result[1]['character'], 'Character 2')
+
+@pytest.mark.parametrize("list_type", ['popular', 'top_rated', 'now_playing', 'upcoming'])
+def test_movie_list(monkeypatch, list_type):
+    api_mock = Mock(return_value={'results': []})
+    monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
+
+    with app.test_client() as client:
+        response = client.get(f'/{list_type}')
+        assert response.status_code == 200
+        api_mock.assert_called_once_with(f'movie/{list_type}')
+
+def test_homepage(monkeypatch):
+    api_mock = Mock(return_value={'results': []})
+    monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
+
+    with app.test_client() as client:
+        response = client.get('/')
+        assert response.status_code == 200
+        api_mock.assert_called_once_with('movie/popular')
 
 if __name__ == '__main__':
     unittest.main()
